@@ -1,0 +1,7 @@
+# test
+charts.test:
+  path: '/charts/examples'
+  defaults:
+    _content: '\Drupal\charts\Controller\ChartsController::exampleAction'
+  requirements:
+    _permission: 'access example charts'

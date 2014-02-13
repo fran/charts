@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * Implements hook_library_info().
+ */
+function charts_google_library_info() {
+  $libraries['visualization'] = array(
+    'title' => t('Google Visualization library'),
+    'website' => 'https://google-developers.appspot.com/chart/',
+    'version' => '1.0',
+    'js' => array(
+      array('data' => 'https://www.google.com/jsapi', 'type' => 'external'),
+    ),
+  );
+  $libraries['charts_google'] = array(
+    'title' => t('Google Charts integration'),
+    'version' => '1.0',
+    'js' => array(
+      array('data' => drupal_get_path('module', 'charts_google') . '/charts_google.js', 'type' => 'file'),
+    ),
+    'dependencies' => array(
+      array('charts_google', 'visualization'),
+    ),
+  );
+
+  return $libraries;
+}

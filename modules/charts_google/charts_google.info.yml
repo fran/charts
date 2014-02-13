@@ -1,0 +1,6 @@
+name: Google Charts
+description: Charts module integration with Google Charts.
+type: module
+package: Charts
+version: 0.1
+core: 8.x

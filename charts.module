@@ -1,0 +1,54 @@
+<?php
+
+use \Drupal\Component\Utility\Json;
+
+/**
+ * Implements hook_theme().
+ */
+function charts_theme() {
+  return array(
+    'chart' => array(
+      'variables' => array('chart' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function charts_permission() {
+  return array(
+    'administer charts' => array(
+      'title' => t('Configure chart settings'),
+    ),
+    'access example charts' => array(
+      'title' => t('Access example charts'),
+      'description' => t('Grants access to the <a href="!url">charts examples</a> page. Use this page for testing chart functionality.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_library().
+ */
+function charts_library() {
+  $library['charts.admin'] = array(
+    'title' => t('Charts admin integration'),
+    'version' => '1.0',
+    'js' => array(
+      array('data' => drupal_get_path('module', 'charts') . '/js/charts.admin.js', 'type' => 'file', 'weight' => 10),
+    ),
+  );
+
+  return $library;
+}
+
+/**
+ * @param $vars
+ * @return string
+ */
+function theme_chart($vars) {
+  $chart = $vars['chart'];
+
+  return '<div class="charts-google" data-chart=' . Json::encode($chart) . '></div>';
+}

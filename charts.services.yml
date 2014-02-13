@@ -1,0 +1,7 @@
+services:
+  plugin.manager.charts:
+    class: Drupal\charts\Plugin\Type\ChartsManager
+    arguments: ['@container.namespaces', '@cache.cache', '@language_manager', '@module_handler']
+  chart:
+    class: Drupal\charts\ChartService
+    arguments: ['@plugin.manager.charts']
