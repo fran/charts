@@ -57,6 +57,7 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $table['rows'] = array();
     foreach ($methods as $method) {
       if (($id && '_charts_examples_' . $id === $method) || (!$id && strpos($method, '_charts_examples_') === 0)) {
+        ;
         $row = array();
         foreach ($plugins as $plugin) {
           $example = $this->{$method}();
@@ -123,7 +124,7 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
   /**
    * TODO: convert to object
    */
-  function _charts_examples_pie_alternative_syntax() {
+  /*function _charts_examples_pie_alternative_syntax() {
     $chart = array(
       '#type' => 'chart',
       '#title' => t('Pie alternative syntax'),
@@ -142,7 +143,7 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $example['chart'] = $chart;
 
     return $example;
-  }
+  }*/
 
   /**
    * @return mixed
@@ -177,7 +178,7 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
   /**
    * TODO: convert to object
    */
-  function _charts_examples_column_simple() {
+  /*function _charts_examples_column_simple() {
     $chart = array(
       '#type' => 'chart',
       '#chart_type' => 'column',
@@ -203,22 +204,22 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $example['chart'] = $chart;
 
     return $example;
-  }
+  }*/
 
   /**
    * TODO: convert to object
    */
-  function _charts_examples_bar_simple() {
+  /*function _charts_examples_bar_simple() {
     $example = _charts_examples_column_simple();
     $example['chart']['#title'] = t('Bar simple');
     $example['chart']['#chart_type'] = 'bar';
     return $example;
-  }
+  }*/
 
   /**
    * TODO: convert to object
    */
-  function _charts_examples_scatter() {
+  /*function _charts_examples_scatter() {
     $chart = array(
       '#type' => 'chart',
       '#chart_type' => 'scatter',
@@ -238,12 +239,12 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $example['chart'] = $chart;
 
     return $example;
-  }
+  }*/
 
   /**
    * TODO: convert to object
    */
-  function _charts_examples_combo() {
+  /*function _charts_examples_combo() {
     $chart = array(
       '#type' => 'chart',
       '#chart_type' => 'column',
@@ -310,5 +311,5 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $example['notes']['google'] = t('Google charts cannot provide a legend on the same side as an axis, so legends cannot be displayed on the left or right in a combo chart.') . ' ' . t('Google cannot assign a color to an individual item. See this <a href="https://code.google.com/p/google-visualization-api-issues/issues/detail?id=1267">feature request</a>.');
 
     return $example;
-  }
+  }*/
 }

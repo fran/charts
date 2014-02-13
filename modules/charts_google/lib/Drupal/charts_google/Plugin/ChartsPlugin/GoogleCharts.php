@@ -20,26 +20,32 @@ class GoogleCharts extends ChartBase {
    * @return array
    */
   public function render() {
-    //$chart_definition = $this->charts_google_populate_chart_axes($chart, $chart_definition);
 
     $options = $this->charts_google_populate_chart_options();
     $data = $this->charts_google_populate_chart_data();
+    //$axes = $this->charts_google_populate_chart_axes();
+    $visualization = $this->charts_google_visualization_type($this->chart->getChartType());
+
+    // Trim out empty options.
+    $this->charts_trim_array($options);
+
+    $chart = array(
+      'data' => $data['data'],
+      'options' => $options,
+      'visualization' => $visualization,
+    );
+
+    if (isset($data['_data'])) {
+      $chart['_data'] = $data['_data'];
+    }
 
     if (!$this->chart->getChartId()) {
       $this->chart->setChartId(drupal_html_id('google-chart-render'));
     }
 
-    // Trim out empty options.
-    $this->charts_trim_array($options);
-
     return array(
       '#theme' => 'chart',
-      '#chart' => array(
-        'data' => $data['data'],
-        '_data' => $data['_data'],
-        'options' => $options,
-        'visualization' => $this->charts_google_visualization_type($this->chart->getChartType()),
-      ),
+      '#chart' => $chart,
       '#attached' => array(
         'library' => array(
           array('charts_google', 'charts_google')
@@ -51,7 +57,8 @@ class GoogleCharts extends ChartBase {
   /**
    * Utility to convert a Drupal renderable type to a Google visualization type.
    */
-  private function charts_google_visualization_type($renderable_type) {
+  private
+  function charts_google_visualization_type($renderable_type) {
     $types = array(
       'area' => 'AreaChart',
       'bar' => 'BarChart',
@@ -67,7 +74,8 @@ class GoogleCharts extends ChartBase {
   /**
    * Utility to populate main chart options.
    */
-  private function charts_google_populate_chart_options() {
+  private
+  function charts_google_populate_chart_options() {
     $options = array();
 
     $options['title'] = $this->chart->getTitle() ? $this->chart->getTitle() : NULL;
@@ -108,7 +116,8 @@ class GoogleCharts extends ChartBase {
   /**
    * Utility to populate chart axes.
    */
-  private function charts_google_populate_chart_axes($chart, $chart_definition) {
+  private
+  function charts_google_populate_chart_axes($chart, $chart_definition) {
     foreach (Element::children($chart) as $key) {
       if ($chart[$key]['#type'] === 'chart_xaxis' || $chart[$key]['#type'] === 'chart_yaxis') {
         // Make sure defaults are loaded.
@@ -165,7 +174,8 @@ class GoogleCharts extends ChartBase {
   /**
    * Utility to populate chart data.
    */
-  private function charts_google_populate_chart_data() {
+  private
+  function charts_google_populate_chart_data() {
     $chart_definition = array();
     $options['series'] = array();
     $chart_type_info = $this->chart_get_type($this->chart->getChartType());
