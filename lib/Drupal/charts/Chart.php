@@ -84,8 +84,8 @@ class Chart {
     $this->setChartLibrary(NULL);
     $this->setRawOptions(array());
 
-    $this->setXaxis(new ChartAxis());
-    $this->setYaxis(new ChartAxis());
+    $this->setXaxis(array());
+    $this->setYaxis(array());
     $this->setData(array());
   }
 
@@ -573,7 +573,15 @@ class Chart {
   }
 
   /**
-   * @param mixed $xaxis
+   * @param $key
+   * @param ChartAxis $xaxis
+   */
+  public function addXaxis($key, ChartAxis $xaxis) {
+    $this->xaxis[$key] = $xaxis;
+  }
+
+  /**
+   * @param array $xaxis
    */
   public function setXaxis($xaxis) {
     $this->xaxis = $xaxis;
@@ -584,6 +592,23 @@ class Chart {
    */
   public function getXaxis() {
     return $this->xaxis;
+  }
+
+  /**
+   * @param $key
+   *
+   * @return mixed
+   */
+  public function getXaxisByKey($key) {
+    return $this->xaxis[$key];
+  }
+
+  /**
+   * @param $key
+   * @param ChartAxis $yaxis
+   */
+  public function addYaxis($key, ChartAxis $yaxis) {
+    $this->yaxis[$key] = $yaxis;
   }
 
   /**
@@ -598,6 +623,15 @@ class Chart {
    */
   public function getYaxis() {
     return $this->yaxis;
+  }
+
+  /**
+   * @param $key
+   *
+   * @return mixed
+   */
+  public function getYaxisByKey($key) {
+    return $this->yaxis[$key];
   }
 
   /**

@@ -189,17 +189,17 @@ class GoogleCharts extends ChartBase {
       $axis_index = 0;
       if ($data->getTargetAxis()) {
         $axis_name = $data->getTargetAxis();
-        //foreach (Element::children($chart) as $axis_key) {
-        //$multi_axis_type = $chart_type_info['axis_inverted'] ? 'chart_xaxis' : 'chart_yaxis';
-        $axis = $this->chart->getXaxis();
-        //if ($chart[$axis_key]['#type'] === $multi_axis_type) {
-        /*if ($axis_key === $axis_name) {
-          break;
-        }*/
-        $axis_index++;
-        //}
-        //}
-        $series['targetAxisIndex'] = $axis_index;
+        $multi_axis_type = $chart_type_info['axis_inverted'] ? 'getXaxis' : 'getYaxis';
+
+        foreach ($this->chart->{$multi_axis_type}() as $axis_key) {
+          //$axis = $this->chart->getXaxisByKey($axis_key);
+
+          if ($axis_key === $axis_name) {
+            break;
+          }
+          $axis_index++;
+          $series['targetAxisIndex'] = $axis_index;
+        }
       }
 
       // Allow data to provide the labels. This will override the axis settings.
