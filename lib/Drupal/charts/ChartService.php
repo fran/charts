@@ -2,6 +2,8 @@
 
 namespace Drupal\charts;
 
+use Drupal\charts\Chart\Chart;
+use Drupal\charts\Plugin\ChartBase;
 use Drupal\charts\Plugin\Type\ChartsManager;
 
 class ChartService {

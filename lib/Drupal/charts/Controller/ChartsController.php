@@ -2,11 +2,11 @@
 
 namespace Drupal\charts\Controller;
 
-use Drupal\charts\Chart;
-use Drupal\charts\ChartAxis;
-use Drupal\charts\ChartBase;
-use Drupal\charts\ChartsData;
-use Drupal\charts\ChartsDataItem;
+use Drupal\charts\Chart\Chart;
+use Drupal\charts\Chart\ChartAxis;
+use Drupal\charts\Plugin\ChartBase;
+use Drupal\charts\Chart\ChartsData;
+use Drupal\charts\Chart\ChartsDataItem;
 use Drupal\charts\ChartService;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -195,6 +195,7 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $chart->addData('female', $chart_data_female);
 
     $chart_xaxis = new ChartAxis();
+    $chart_xaxis->setType('xaxis');
     $chart_xaxis->setLabels(array('Jan', 'Feb', 'Mar'));
     $chart->addXaxis('xaxis', $chart_xaxis);
 
@@ -283,14 +284,17 @@ class ChartsController extends ControllerBase implements ContainerInjectionInter
     $chart_data_line->addDataItem($chart_data_item2);
 
     $chart_xaxis = new ChartAxis();
+    $chart_xaxis->setType('xaxis');
     $chart_xaxis->setLabels(array('Jan', 'Feb', 'Mar'));
     $chart->addXaxis('xaxis', $chart_xaxis);
 
     $chart_yaxis = new ChartAxis();
+    $chart_xaxis->setType('yaxis');
     $chart_yaxis->setAxisType('linear');
     $chart->addYaxis('yaxis', $chart_yaxis);
 
     $chart_yaxis2 = new ChartAxis();
+    $chart_xaxis->setType('yaxis');
     $chart_yaxis2->setAxisType('linear');
     $chart_yaxis2->setOpposite(TRUE);
     $chart_yaxis2->setTitle($this->t('Avg'));

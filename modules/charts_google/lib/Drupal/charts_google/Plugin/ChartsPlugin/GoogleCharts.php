@@ -2,9 +2,9 @@
 
 namespace Drupal\charts_google\Plugin\ChartsPlugin;
 
-use Drupal\charts\ChartBase;
-use Drupal\charts\ChartsData;
-use Drupal\Core\Render\Element;
+use Drupal\charts\Chart\ChartAxis;
+use Drupal\charts\Plugin\ChartBase;
+use Drupal\charts\Chart\ChartsData;
 
 /**
  * GoogleCharts
@@ -20,10 +20,9 @@ class GoogleCharts extends ChartBase {
    * @return array
    */
   public function render() {
-
     $options = $this->charts_google_populate_chart_options();
     $data = $this->charts_google_populate_chart_data();
-    //$axes = $this->charts_google_populate_chart_axes();
+    $axes = $this->charts_google_populate_chart_axes();
     $visualization = $this->charts_google_visualization_type($this->chart->getChartType());
 
     // Trim out empty options.
@@ -31,9 +30,13 @@ class GoogleCharts extends ChartBase {
 
     $chart = array(
       'data' => $data['data'],
-      'options' => $options,
+      'options' => array_merge($options, $data['options']),
       'visualization' => $visualization,
     );
+
+    if ($axes) {
+      array_merge($chart, $axes);
+    }
 
     if (isset($data['_data'])) {
       $chart['_data'] = $data['_data'];
@@ -67,15 +70,14 @@ class GoogleCharts extends ChartBase {
       'pie' => 'PieChart',
       'scatter' => 'ScatterChart',
     );
-    drupal_alter('charts_google_visualization_types', $types);
+    //drupal_alter('charts_google_visualization_types', $types);
     return isset($types[$renderable_type]) ? $types[$renderable_type] : FALSE;
   }
 
   /**
    * Utility to populate main chart options.
    */
-  private
-  function charts_google_populate_chart_options() {
+  private function charts_google_populate_chart_options() {
     $options = array();
 
     $options['title'] = $this->chart->getTitle() ? $this->chart->getTitle() : NULL;
@@ -116,56 +118,57 @@ class GoogleCharts extends ChartBase {
   /**
    * Utility to populate chart axes.
    */
-  private
-  function charts_google_populate_chart_axes($chart, $chart_definition) {
-    foreach (Element::children($chart) as $key) {
-      if ($chart[$key]['#type'] === 'chart_xaxis' || $chart[$key]['#type'] === 'chart_yaxis') {
-        // Make sure defaults are loaded.
-        if (empty($chart[$key]['#defaults_loaded'])) {
-          $chart[$key] += element_info($chart[$key]['#type']);
-        }
+  private function charts_google_populate_chart_axes() {
+    $chart_definition = NULL;
 
-        // Populate the chart data.
-        $axis = array();
-        $axis['title'] = $chart[$key]['#title'] ? $chart[$key]['#title'] : '';
-        $axis['titleTextStyle']['color'] = $chart[$key]['#title_color'];
-        $axis['titleTextStyle']['bold'] = $chart[$key]['#title_font_weight'] === 'bold' ? TRUE : FALSE;
-        $axis['titleTextStyle']['italic'] = $chart[$key]['#title_font_style'] === 'italic' ? TRUE : FALSE;
-        $axis['titleTextStyle']['fontSize'] = $chart[$key]['#title_font_size'];
-        // In Google, the row column of data is used as labels.
-        if ($chart[$key]['#labels'] && $chart[$key]['#type'] === 'chart_xaxis') {
-          foreach ($chart[$key]['#labels'] as $label_key => $label) {
-            $chart_definition['data'][$label_key + 1][0] = $label;
-          }
-        }
-        $axis['textStyle']['color'] = $chart[$key]['#labels_color'];
-        $axis['textStyle']['bold'] = $chart[$key]['#labels_font_weight'] === 'bold' ? TRUE : FALSE;
-        $axis['textStyle']['italic'] = $chart[$key]['#labels_font_style'] === 'italic' ? TRUE : FALSE;
-        $axis['textStyle']['fontSize'] = $chart[$key]['#labels_font_size'];
-        $axis['slantedText'] = isset($chart[$key]['#labels_rotation']) ? TRUE : NULL;
-        $axis['slantedTextAngle'] = $chart[$key]['#labels_rotation'];
-        $axis['gridlines']['color'] = $chart[$key]['#grid_line_color'];
-        $axis['baselineColor'] = $chart[$key]['#base_line_color'];
-        $axis['minorGridlines']['color'] = $chart[$key]['#minor_grid_line_color'];
-        $axis['viewWindowMode'] = isset($chart[$key]['#max']) ? 'explicit' : NULL;
-        $axis['viewWindow']['max'] = strlen($chart[$key]['#max']) ? (int) $chart[$key]['#max'] : NULL;
-        $axis['viewWindow']['min'] = strlen($chart[$key]['#min']) ? (int) $chart[$key]['#min'] : NULL;
+    $xaxis = $this->chart->getXaxis();
+    $yaxis = $this->chart->getYaxis();
 
-        // Multi-axis support only applies to the major axis in Google charts.
-        $chart_type_info = $this->chart_get_type($chart['getchart_type']);
-        $axis_index = $chart[$key]['#opposite'] ? 1 : 0;
-        if ($chart[$key]['#type'] === 'chart_xaxis') {
-          $axis_keys = !$chart_type_info['axis_inverted'] ? array('hAxis') : array('vAxes', $axis_index);
+    $axis = array_merge($xaxis, $yaxis);
+
+    foreach ($axis as $key => $value) {
+      /** @var ChartAxis $value */
+
+      // Populate the chart data.
+      $axis = array();
+      $axis['title'] = $value->getTitle() ? $value->getTitle() : '';
+      $axis['titleTextStyle']['color'] = $value->getTitleColor();
+      $axis['titleTextStyle']['bold'] = $value->getTitleFontWeight() === 'bold' ? TRUE : FALSE;
+      $axis['titleTextStyle']['italic'] = $value->getTitleFontStyle() === 'italic' ? TRUE : FALSE;
+      $axis['titleTextStyle']['fontSize'] = $value->getTitleFontSize();
+      // In Google, the row column of data is used as labels.
+      if ($value->getLabels() && $value->getType() === 'xaxis') {
+        foreach ($value->getLabels() as $label_key => $label) {
+          $chart_definition['data'][$label_key + 1][0] = $label;
         }
-        else {
-          $axis_keys = !$chart_type_info['axis_inverted'] ? array('vAxes', $axis_index) : array('hAxis');
-        }
-        $axis_drilldown = & $options;
-        foreach ($axis_keys as $key) {
-          $axis_drilldown = & $axis_drilldown[$key];
-        }
-        $axis_drilldown = $axis;
       }
+      $axis['textStyle']['color'] = $value->getLabelsColor();
+      $axis['textStyle']['bold'] = $value->getLabelsFontWeight() === 'bold' ? TRUE : FALSE;
+      $axis['textStyle']['italic'] = $value->getLabelsFontStyle() === 'italic' ? TRUE : FALSE;
+      $axis['textStyle']['fontSize'] = $value->getLabelsFontSize();
+      $axis['slantedText'] = ($value->getLabelsRotation()) ? TRUE : NULL;
+      $axis['slantedTextAngle'] = $value->getLabelsRotation();
+      $axis['gridlines']['color'] = $value->getGridLineColor();
+      $axis['baselineColor'] = $value->getBaseLineColor();
+      $axis['minorGridlines']['color'] = $value->getMinorGridLineColor();
+      $axis['viewWindowMode'] = ($value->getMax()) ? 'explicit' : NULL;
+      $axis['viewWindow']['max'] = strlen($value->getMax()) ? (int) $value->getMax() : NULL;
+      $axis['viewWindow']['min'] = strlen($value->getMin()) ? (int) $value->getMin() : NULL;
+
+      // Multi-axis support only applies to the major axis in Google charts.
+      $chart_type_info = $this->chart_get_type($this->chart->getChartType());
+      $axis_index = $value->getOpposite() ? 1 : 0;
+      if ($value->getType() === 'xaxis') {
+        $axis_keys = !$chart_type_info['axis_inverted'] ? array('hAxis') : array('vAxes', $axis_index);
+      }
+      else {
+        $axis_keys = !$chart_type_info['axis_inverted'] ? array('vAxes', $axis_index) : array('hAxis');
+      }
+      $axis_drilldown = & $options;
+      foreach ($axis_keys as $key) {
+        $axis_drilldown = & $axis_drilldown[$key];
+      }
+      $axis_drilldown = $axis;
     }
 
     return $chart_definition;
@@ -174,8 +177,7 @@ class GoogleCharts extends ChartBase {
   /**
    * Utility to populate chart data.
    */
-  private
-  function charts_google_populate_chart_data() {
+  private function charts_google_populate_chart_data() {
     $chart_definition = array();
     $options['series'] = array();
     $chart_type_info = $this->chart_get_type($this->chart->getChartType());
@@ -190,10 +192,7 @@ class GoogleCharts extends ChartBase {
       if ($data->getTargetAxis()) {
         $axis_name = $data->getTargetAxis();
         $multi_axis_type = $chart_type_info['axis_inverted'] ? 'getXaxis' : 'getYaxis';
-
-        foreach ($this->chart->{$multi_axis_type}() as $axis_key) {
-          //$axis = $this->chart->getXaxisByKey($axis_key);
-
+        foreach ($this->chart->{$multi_axis_type}() as $axis_key => $axis_value) {
           if ($axis_key === $axis_name) {
             break;
           }
@@ -267,7 +266,7 @@ class GoogleCharts extends ChartBase {
 
       // Add the series to the main chart definition.
       $this->charts_trim_array($series);
-      $options['series'][$series_number] = $series;
+      $chart_definition['options']['series'][$series_number] = $series;
 
       // Merge in any point-specific data points.
       foreach ($data->getDataItem() as $key => $data_item) {
@@ -316,8 +315,7 @@ class GoogleCharts extends ChartBase {
    * {pattern:'#,###%'} will result in output values "1,000%", "750%", and "50%"
    * for values 10, 7.5, and 0.5.
    */
-  private
-  function charts_google_escape_icu_characters($string) {
+  private function charts_google_escape_icu_characters($string) {
     return preg_replace('/([0-9@#\.\-,E\+;%\'\*])/', "'$1'", $string);
   }
 

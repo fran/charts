@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\charts;
+namespace Drupal\charts\Chart;
 
 class Chart {
 

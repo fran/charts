@@ -1,8 +1,9 @@
 <?php
 
-namespace Drupal\charts;
+namespace Drupal\charts\Plugin;
 
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\charts\Chart\Chart;
 
 abstract class ChartBase extends PluginBase implements ChartPluginInterface {
 

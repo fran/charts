@@ -1,10 +1,11 @@
 <?php
 
-namespace Drupal\charts;
+namespace Drupal\charts\Chart;
 
 class ChartAxis {
 
   private $axis_type;
+  private $type;
   private $title;
   private $title_color;
   private $title_font_weight;
@@ -25,6 +26,7 @@ class ChartAxis {
 
   public function __construct() {
     $this->setAxisType('linear');
+    $this->setType('xaxis');
     $this->setTitle('');
     $this->setTitleColor('#000');
     $this->setTitleFontWeight('normal');
@@ -56,6 +58,20 @@ class ChartAxis {
    */
   public function getAxisType() {
     return $this->axis_type;
+  }
+
+  /**
+   * @param mixed $type
+   */
+  public function setType($type) {
+    $this->type = $type;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getType() {
+    return $this->type;
   }
 
   /**
